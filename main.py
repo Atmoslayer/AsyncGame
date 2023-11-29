@@ -121,6 +121,9 @@ def get_frame_size(text):
 
 async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames):
     for rocket_frame in cycle(rocket_frames):
+        rows_direction, columns_direction, space_pressed = read_controls(canvas)
+        rocket_row = rocket_row + rows_direction
+        rocket_column = rocket_column + columns_direction
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
         canvas.refresh()
 
@@ -170,17 +173,16 @@ def draw(canvas):
     with open("templates/rocket_frame_2.txt", "r") as frame:
         rocket_frame_2 = frame.read()
     rocket_frames = [rocket_frame_1, rocket_frame_2]
-
+    canvas.nodelay(True)
     curses.curs_set(False)
     canvas.border()
-    canvas.nodelay
     screen = curses.initscr()
     max_row, max_column = screen.getmaxyx()
     stars_symbols = ['*', ':', '.', '+']
     coroutines = []
 
-    rocket_start_row = max_row / 2
-    rocket_start_column = max_column / 2
+    rocket_row = max_row / 2
+    rocket_column = max_column / 2
 
     for stars_quantity in range(100):
         star_row = random.randint(1, max_row-2)
@@ -188,11 +190,12 @@ def draw(canvas):
         star_symbol = random.choice(stars_symbols)
         coroutines.append(blink(canvas, star_row, star_column, star_symbol))
 
-    coroutines.append(animate_rocket(canvas, rocket_start_row, rocket_start_column, rocket_frames))
-    coroutines.append(fire(canvas, rocket_start_row, rocket_start_column + 2))
+    coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
+    coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames))
 
     while True:
         index = 0
+
         while index < len(coroutines):
             coroutine = coroutines[index]
             try:
