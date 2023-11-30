@@ -4,6 +4,7 @@ import random
 import time
 
 from animations import blink, fire, animate_rocket
+from frames_control_functions import get_frame_size
 
 TIC_TIMEOUT = 0.1
 
@@ -37,7 +38,7 @@ def draw(canvas):
     ]
 
     coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
-    coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames))
+    coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column))
 
     while True:
         index = 0
