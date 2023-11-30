@@ -49,5 +49,9 @@ def draw(canvas):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Space game parser')
+    parser.add_argument('--stars', help='Enter stars quantity', type=int, default=100)
+    arguments = parser.parse_args()
+    stars_quantity = arguments.stars
     curses.update_lines_cols()
     curses.wrapper(draw)
