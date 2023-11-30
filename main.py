@@ -1,3 +1,4 @@
+import argparse
 import curses
 import random
 import time
@@ -5,6 +6,15 @@ import time
 from animations import blink, fire, animate_rocket
 
 TIC_TIMEOUT = 0.1
+
+
+def stars_generator(canvas, max_row, max_column):
+    stars_symbols = ['*', ':', '.', '+']
+    for star in range(stars_quantity):
+        star_row = random.randint(1, max_row - 2)
+        star_column = random.randint(1, max_column - 2)
+        star_symbol = random.choice(stars_symbols)
+        yield blink(canvas, star_row, star_column, star_symbol)
 
 
 def draw(canvas):
@@ -18,24 +28,19 @@ def draw(canvas):
     canvas.border()
     screen = curses.initscr()
     max_row, max_column = screen.getmaxyx()
-    stars_symbols = ['*', ':', '.', '+']
-    coroutines = []
 
     rocket_row = max_row / 2
     rocket_column = max_column / 2
 
-    for stars_quantity in range(100):
-        star_row = random.randint(1, max_row-2)
-        star_column = random.randint(1, max_column-2)
-        star_symbol = random.choice(stars_symbols)
-        coroutines.append(blink(canvas, star_row, star_column, star_symbol))
+    coroutines = [
+        star for star in stars_generator(canvas, max_row, max_column)
+    ]
 
     coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
     coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames))
 
     while True:
         index = 0
-
         while index < len(coroutines):
             coroutine = coroutines[index]
             try:
