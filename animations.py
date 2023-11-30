@@ -60,7 +60,7 @@ async def blink(canvas, row, column, symbol='*'):
         canvas.addstr(row, column, symbol, curses.A_DIM)
         await asyncio.sleep(0)
 
-        for step in range(10):
+        for step in range(20):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
@@ -72,7 +72,7 @@ async def blink(canvas, row, column, symbol='*'):
         canvas.addstr(row, column, symbol, curses.A_BOLD)
         await asyncio.sleep(0)
 
-        for step in range(9):
+        for step in range(5):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
