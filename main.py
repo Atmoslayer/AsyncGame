@@ -4,7 +4,6 @@ import random
 import time
 
 from animations import blink, fire, animate_rocket
-from frames_control_functions import get_frame_size
 
 TIC_TIMEOUT = 0.1
 
@@ -42,13 +41,11 @@ def draw(canvas):
 
     while True:
         index = 0
-        while index < len(coroutines):
-            coroutine = coroutines[index]
+        for coroutine in coroutines.copy():
             try:
                 coroutine.send(None)
             except StopIteration:
                 coroutines.remove(coroutine)
-            index += 1
 
         canvas.refresh()
         time.sleep(TIC_TIMEOUT)
