@@ -13,8 +13,12 @@ TIC_TIMEOUT = 0.1
 def stars_generator(canvas, max_row, max_column):
     stars_symbols = ['*', ':', '.', '+']
     for star in range(stars_quantity):
-        star_row = random.randint(1, max_row - 2)
-        star_column = random.randint(1, max_column - 2)
+        star_min_row = 1
+        star_max_row = max_row - 2
+        star_min_column = 1
+        star_max_column = max_column - 2
+        star_row = random.randint(star_min_row, star_max_row)
+        star_column = random.randint(star_min_column, star_max_column)
         star_symbol = random.choice(stars_symbols)
         star_timeout = random.randint(1, 50)
         yield blink(canvas, star_row, star_column, star_timeout, star_symbol)
