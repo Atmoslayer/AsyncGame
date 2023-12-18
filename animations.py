@@ -49,13 +49,11 @@ async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_r
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame, negative=True)
 
 
-async def blink(canvas, row, column, symbol='*'):
+async def blink(canvas, row, column, timeout, symbol='*'):
 
     while True:
 
-        random_integer = random.randint(1, 50)
-
-        for step in range(random_integer):
+        for step in range(timeout):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_DIM)

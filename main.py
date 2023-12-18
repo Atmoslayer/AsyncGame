@@ -2,8 +2,10 @@ import argparse
 import curses
 import random
 import time
+from typing import List
 
 from animations import blink, fire, animate_rocket
+from frames_control_functions import get_frame_size
 
 TIC_TIMEOUT = 0.1
 
@@ -14,7 +16,8 @@ def stars_generator(canvas, max_row, max_column):
         star_row = random.randint(1, max_row - 2)
         star_column = random.randint(1, max_column - 2)
         star_symbol = random.choice(stars_symbols)
-        yield blink(canvas, star_row, star_column, star_symbol)
+        star_timeout = random.randint(1, 50)
+        yield blink(canvas, star_row, star_column, star_timeout, star_symbol)
 
 
 def draw(canvas):
