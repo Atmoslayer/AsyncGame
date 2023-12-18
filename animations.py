@@ -43,7 +43,7 @@ async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_r
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
         canvas.refresh()
 
-        for step in range(5):
+        for step in range(1):
             await asyncio.sleep(0)
 
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame, negative=True)
