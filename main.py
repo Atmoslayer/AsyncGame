@@ -2,10 +2,8 @@ import argparse
 import curses
 import random
 import time
-from typing import List
 
 from animations import blink, fire, animate_rocket
-from frames_control_functions import get_frame_size
 
 TIC_TIMEOUT = 0.1
 
@@ -29,7 +27,7 @@ def draw(canvas):
         rocket_frame_1 = frame.read()
     with open("templates/rocket_frame_2.txt", "r") as frame:
         rocket_frame_2 = frame.read()
-    rocket_frames = [rocket_frame_1, rocket_frame_2]
+    rocket_frames = [rocket_frame_1, rocket_frame_1, rocket_frame_2, rocket_frame_2]
     canvas.nodelay(True)
     curses.curs_set(False)
     canvas.border()
