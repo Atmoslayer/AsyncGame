@@ -41,9 +41,6 @@ async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_r
         rocket_row = check_frame(rocket_row, rows_direction, max_row, rocket_row_size)
         rocket_column = check_frame(rocket_column, columns_direction, max_column, rocket_column_size)
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
-        for frame_timeout in range(2):
-            await asyncio.sleep(0)
-        canvas.refresh()
 
         for step in range(1):
             await asyncio.sleep(0)

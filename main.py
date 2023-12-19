@@ -47,14 +47,13 @@ def draw(canvas):
     coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column))
 
     while True:
-        index = 0
         for coroutine in coroutines.copy():
             try:
                 coroutine.send(None)
             except StopIteration:
                 coroutines.remove(coroutine)
 
-        canvas.refresh()
+            canvas.refresh()
         time.sleep(TIC_TIMEOUT)
 
 
