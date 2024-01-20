@@ -5,6 +5,11 @@ from itertools import cycle
 from frames_control_functions import read_controls, draw_frame, get_frame_size, check_frame
 
 
+async def sleep(tics=1):
+    for tick in range(tics):
+        await asyncio.sleep(0)
+
+
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
     row, column = start_row, start_column
 
@@ -41,8 +46,7 @@ async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_r
         rocket_column = check_frame(rocket_column, columns_direction, max_column, rocket_column_size)
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
-        for step in range(1):
-            await asyncio.sleep(0)
+        await sleep(1)
 
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame, negative=True)
 
@@ -51,29 +55,19 @@ async def blink(canvas, row, column, timeout, symbol='*'):
 
     while True:
 
-        for step in range(timeout):
-            await asyncio.sleep(0)
+        await sleep(timeout)
 
         canvas.addstr(row, column, symbol, curses.A_DIM)
-
-        for step in range(20):
-            await asyncio.sleep(0)
+        await sleep(20)
 
         canvas.addstr(row, column, symbol)
-        await asyncio.sleep(0)
-
-        for step in range(3):
-            await asyncio.sleep(0)
+        await sleep(3)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-
-        for step in range(5):
-            await asyncio.sleep(0)
+        await sleep(5)
 
         canvas.addstr(row, column, symbol)
-
-        for step in range(3):
-            await asyncio.sleep(0)
+        await sleep(3)
 
 
 async def fly_garbage(canvas, column, garbage_frame, speed=0.5):

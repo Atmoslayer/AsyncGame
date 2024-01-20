@@ -1,11 +1,10 @@
 import argparse
-import asyncio
 import curses
 import os
 import random
 import time
 
-from animations import blink, fire, animate_rocket, fly_garbage
+from animations import blink, fire, animate_rocket, fly_garbage, sleep
 
 TIC_TIMEOUT = 0.1
 
@@ -73,8 +72,7 @@ async def fill_orbit_with_garbage(canvas, max_column, garbage_quantity):
         garbage_frame = random.choice(garbage_frames)
         garbage_timeout = random.randint(1, garbage_quantity)
         coroutines.append(fly_garbage(canvas, column=garbage_column, garbage_frame=garbage_frame))
-        for step in range(garbage_timeout):
-            await asyncio.sleep(0)
+        await sleep(garbage_timeout)
 
 
 if __name__ == '__main__':
