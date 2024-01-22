@@ -2,7 +2,7 @@ import asyncio
 import curses
 from itertools import cycle
 
-from frames_control_functions import read_controls, draw_frame, get_frame_size, check_frame
+from frames_control_functions import read_controls, draw_frame, get_frame_size, check_frame, update_speed
 
 
 async def sleep(tics=1):
@@ -40,10 +40,17 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
 async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column):
     rocket_row_size, rocket_column_size = get_frame_size(rocket_frames[0])
+    row_speed = column_speed = 0
     for rocket_frame in cycle(rocket_frames):
         rows_direction, columns_direction, space_pressed = read_controls(canvas)
+        row_speed, column_speed = update_speed(row_speed, column_speed, rows_direction, columns_direction)
+
+        rocket_row += row_speed
+        rocket_column += column_speed
+
         rocket_row = check_frame(rocket_row, rows_direction, max_row, rocket_row_size)
         rocket_column = check_frame(rocket_column, columns_direction, max_column, rocket_column_size)
+
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
         await sleep(1)
