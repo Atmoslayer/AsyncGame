@@ -78,7 +78,7 @@ async def fill_orbit_with_garbage(canvas, max_column, garbage_quantity):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Space game parser')
     parser.add_argument('--stars', help='Enter stars quantity', type=int, default=100)
-    parser.add_argument('--garbage', help='Enter stars quantity', type=int, default=50)
+    parser.add_argument('--garbage', help='Enter garbage quantity', type=int, default=50)
     arguments = parser.parse_args()
     stars_quantity = arguments.stars
     garbage_quantity = arguments.garbage
