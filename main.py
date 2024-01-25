@@ -8,7 +8,7 @@ import time
 from itertools import cycle
 
 from frames_control_functions import read_controls, draw_frame, get_frame_size, check_frame, update_speed
-
+from obstacles import Obstacle, show_obstacles
 
 TIC_TIMEOUT = 0.1
 
@@ -91,6 +91,8 @@ async def blink(canvas, row, column, timeout, symbol='*'):
 
 async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
+    global obstacles
+    global coroutines
     rows_number, columns_number = canvas.getmaxyx()
 
     column = max(column, 0)
@@ -99,9 +101,14 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
     row = 0
 
     while row < rows_number:
+        frame_row_size, frame_column_size = get_frame_size(garbage_frame)
+        obstacle = Obstacle(row, column, frame_row_size, frame_column_size, row)
+        obstacles.append(obstacle)
+        coroutines.append(show_obstacles(canvas, obstacles))
         draw_frame(canvas, row, column, garbage_frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, garbage_frame, negative=True)
+        obstacles.remove(obstacle)
         row += speed
 
 
@@ -148,6 +155,10 @@ def draw(canvas):
 
     rocket_row = max_row / 2
     rocket_column = max_column / 2
+
+    global obstacles
+
+    obstacles = []
 
     global coroutines
 
