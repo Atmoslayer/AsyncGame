@@ -56,26 +56,36 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
 async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column):
     global coroutines
+    global obstacles_in_last_collisions
+    game_over = False
     rocket_row_size, rocket_column_size = get_frame_size(rocket_frames[0])
     row_speed = column_speed = 0
     for rocket_frame in cycle(rocket_frames):
-        rows_direction, columns_direction, space_pressed = read_controls(canvas)
-        row_speed, column_speed = update_speed(row_speed, column_speed, rows_direction, columns_direction)
+        if game_over:
+            coroutines.append(show_gameover(canvas, max_row, max_column))
+            return
+        else:
+            rows_direction, columns_direction, space_pressed = read_controls(canvas)
+            row_speed, column_speed = update_speed(row_speed, column_speed, rows_direction, columns_direction)
 
-        rocket_row += row_speed
-        rocket_column += column_speed
+            rocket_row += row_speed
+            rocket_column += column_speed
 
-        rocket_row = check_frame(rocket_row, rows_direction, max_row, rocket_row_size)
-        rocket_column = check_frame(rocket_column, columns_direction, max_column, rocket_column_size)
+            rocket_row = check_frame(rocket_row, rows_direction, max_row, rocket_row_size)
+            rocket_column = check_frame(rocket_column, columns_direction, max_column, rocket_column_size)
 
-        draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
+            draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
-        if space_pressed:
-            coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
+            if space_pressed:
+                coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
 
-        await sleep(1)
+            await sleep(1)
 
-        draw_frame(canvas, rocket_row, rocket_column, rocket_frame, negative=True)
+            draw_frame(canvas, rocket_row, rocket_column, rocket_frame, negative=True)
+            for obstacle in obstacles:
+                if obstacle.has_collision(rocket_row, rocket_column):
+                    obstacles_in_last_collisions.append(obstacle)
+                    game_over = True
 
 
 async def blink(canvas, row, column, timeout, symbol='*'):
@@ -124,7 +134,6 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
 
 
 async def fill_orbit_with_garbage(canvas, max_column, garbage_quantity):
-
     garbage_frames = [
         open(os.path.join(f'{os.getcwd()}/templates/garbage', garbage_file), "r").read() for garbage_file
         in os.listdir(f'{os.getcwd()}/templates/garbage')
@@ -150,6 +159,16 @@ def stars_generator(canvas, max_row, max_column):
         star_symbol = random.choice(stars_symbols)
         star_timeout = random.randint(1, 50)
         yield blink(canvas, star_row, star_column, star_timeout, star_symbol)
+
+
+async def show_gameover(canvas, max_row, max_column):
+    while True:
+        with open("templates/game_over.txt", "r") as frame:
+            frame = frame.read()
+            frame_row_size, frame_column_size = get_frame_size(frame)
+
+            draw_frame(canvas, max_row / 2 - frame_row_size / 2, max_column / 2 - frame_column_size / 2, frame)
+            await asyncio.sleep(0)
 
 
 def draw(canvas):
@@ -197,7 +216,7 @@ def draw(canvas):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Space game parser')
     parser.add_argument('--stars', help='Enter stars quantity', type=int, default=100)
-    parser.add_argument('--garbage', help='Enter garbage quantity', type=int, default=50)
+    parser.add_argument('--garbage', help='Enter garbage quantity', type=int, default=30)
     arguments = parser.parse_args()
     stars_quantity = arguments.stars
     garbage_quantity = arguments.garbage
