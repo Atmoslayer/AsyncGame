@@ -21,6 +21,7 @@ async def sleep(tics=1):
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
 
     global obstacles
+    global obstacles_in_last_collisions
 
     row, column = start_row, start_column
 
@@ -44,6 +45,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
     while 0 < row < max_row and 0 < column < max_column:
         for obstacle in obstacles:
             if obstacle.has_collision(row, column):
+                obstacles_in_last_collisions.append(obstacle)
                 return
         canvas.addstr(round(row), round(column), symbol)
         await asyncio.sleep(0)
@@ -99,6 +101,7 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
     global obstacles
     global coroutines
+    global obstacles_in_last_collisions
     rows_number, columns_number = canvas.getmaxyx()
 
     column = max(column, 0)
@@ -113,6 +116,9 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
         draw_frame(canvas, row, column, garbage_frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, garbage_frame, negative=True)
+        if obstacle in obstacles_in_last_collisions:
+            obstacles_in_last_collisions.remove(obstacle)
+            return
         obstacles.remove(obstacle)
         row += speed
 
@@ -162,7 +168,9 @@ def draw(canvas):
     rocket_column = max_column / 2
 
     global obstacles
+    global obstacles_in_last_collisions
 
+    obstacles_in_last_collisions = []
     obstacles = []
 
     global coroutines
