@@ -62,8 +62,8 @@ async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_r
 
         draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
-        # if space_pressed:
-        #     coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
+        if space_pressed:
+            coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
 
         await sleep(1)
 
@@ -155,7 +155,6 @@ def draw(canvas):
         star for star in stars_generator(canvas, max_row, max_column)
     ]
 
-    coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
     coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column))
     coroutines.append(fill_orbit_with_garbage(canvas, max_column, garbage_quantity))
 
