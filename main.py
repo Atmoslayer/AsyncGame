@@ -76,6 +76,9 @@ async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column)
 
     game_over = False
     rocket_row_size, rocket_column_size = get_frame_size(rocket_frames[0])
+    rocket_row = round(rocket_row - rocket_row_size / 2)
+    rocket_column = round(rocket_column - rocket_column_size / 2)
+
     row_speed = column_speed = 0
     for rocket_frame in cycle(rocket_frames):
         if game_over:
