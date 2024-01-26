@@ -8,6 +8,7 @@ DOWN_KEY_CODE = 258
 
 
 def read_controls(canvas):
+    """Read keys pressed and returns tuple witl controls state."""
     rows_direction = columns_direction = 0
     space_pressed = False
 
@@ -41,6 +42,7 @@ def read_controls(canvas):
 
 
 def draw_frame(canvas, start_row, start_column, text, negative=False):
+    """Draw multiline text fragment on canvas, erase text instead of drawing if negative=True is specified."""
     rows_number, columns_number = canvas.getmaxyx()
 
     for row, line in enumerate(text.splitlines(), round(start_row)):
@@ -68,6 +70,7 @@ def draw_frame(canvas, start_row, start_column, text, negative=False):
 
 
 def get_frame_size(text):
+    """Calculate size of multiline text fragment, return pair — number of rows and colums."""
     lines = text.splitlines()
     rows = len(lines)
     columns = max([len(line) for line in lines])
@@ -75,6 +78,7 @@ def get_frame_size(text):
 
 
 def check_frame(current_coordinate, set_direction, max_coordinate, coordinate_size):
+    """Calculate expected coordinate. If it is over the screen, returns current rocket coordinate."""
     expected_coordinate = current_coordinate + set_direction
     if 1 >= expected_coordinate or (expected_coordinate + coordinate_size) >= max_coordinate - 1:
         return current_coordinate

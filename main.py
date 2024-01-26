@@ -24,11 +24,13 @@ PHRASES = {
 
 
 async def sleep(tics=1):
+    """Execute delays for animations. Delay duration can be transmitted."""
     for tick in range(tics):
         await asyncio.sleep(0)
 
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
+    """Display animation of gun shot, direction and speed can be specified."""
 
     global obstacles, obstacles_in_last_collisions
 
@@ -64,6 +66,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
 
 async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column):
+    """Display animation of rocket, read and uses controls. Rocket frames specified on start."""
     global coroutines, obstacles_in_last_collisions, year
     coroutines.append(show_year(canvas, max_column))
 
@@ -106,7 +109,7 @@ async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column)
 
 
 async def blink(canvas, row, column, timeout, symbol='*'):
-
+    """Display animation of the transmitted star."""
     while True:
 
         await sleep(timeout)
@@ -150,6 +153,7 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
 
 
 async def fill_orbit_with_garbage(canvas, max_column):
+    """Specify and create coroutines for garbage objects animation according to game complexity."""
     garbage_frames = [
         open(os.path.join(f'{os.getcwd()}/templates/garbage', garbage_file), "r").read() for garbage_file
         in os.listdir(f'{os.getcwd()}/templates/garbage')
@@ -168,6 +172,7 @@ async def fill_orbit_with_garbage(canvas, max_column):
 
 
 def stars_generator(canvas, max_row, max_column):
+    """Generate star parameters, according to screen size and required quantity."""
     stars_symbols = ['*', ':', '.', '+']
     for star in range(stars_quantity):
         star_min_row = 1
@@ -182,6 +187,7 @@ def stars_generator(canvas, max_row, max_column):
 
 
 async def show_gameover(canvas, max_row, max_column):
+    """Draw GameOver sign in the middle of the screen if the rocker clashes the garbage."""
     with open("templates/game_over.txt", "r") as frame:
         frame = frame.read()
         frame_row_size, frame_column_size = get_frame_size(frame)
@@ -191,6 +197,7 @@ async def show_gameover(canvas, max_row, max_column):
 
 
 async def show_year(canvas, max_column):
+    """Draw current game year in the right corner of the screen."""
     global year
     year_event = ''
     event_window = canvas.derwin(1, 1, 1, 1)
@@ -207,6 +214,7 @@ async def show_year(canvas, max_column):
 
 
 async def update_year():
+    """Update current game year after specified time."""
     global year
     while True:
         year += 1
@@ -214,6 +222,7 @@ async def update_year():
 
 
 def get_garbage_delay_tics():
+    """Specify game complexity by updating the garbage quantity according to the current game year."""
     global year
     if year < 1961:
         return None
@@ -232,6 +241,7 @@ def get_garbage_delay_tics():
 
 
 def draw(canvas):
+    """Specify all start parameters, draws and executes main event loop."""
     global coroutines, obstacles, obstacles_in_last_collisions, year
     canvas.nodelay(True)
     curses.curs_set(False)
