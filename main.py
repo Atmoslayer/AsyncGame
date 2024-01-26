@@ -63,9 +63,16 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         column += columns_speed
 
 
-async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column):
+async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column):
     global coroutines, obstacles_in_last_collisions, year
     coroutines.append(show_year(canvas, max_column))
+
+    with open("templates/rocket/rocket_frame_1.txt", "r") as frame:
+        rocket_frame_1 = frame.read()
+    with open("templates/rocket/rocket_frame_2.txt", "r") as frame:
+        rocket_frame_2 = frame.read()
+
+    rocket_frames = [rocket_frame_1, rocket_frame_1, rocket_frame_2, rocket_frame_2]
 
     game_over = False
     rocket_row_size, rocket_column_size = get_frame_size(rocket_frames[0])
@@ -224,12 +231,6 @@ def get_garbage_delay_tics():
 
 
 def draw(canvas):
-    with open("templates/rocket/rocket_frame_1.txt", "r") as frame:
-        rocket_frame_1 = frame.read()
-    with open("templates/rocket/rocket_frame_2.txt", "r") as frame:
-        rocket_frame_2 = frame.read()
-
-    rocket_frames = [rocket_frame_1, rocket_frame_1, rocket_frame_2, rocket_frame_2]
     canvas.nodelay(True)
     curses.curs_set(False)
     screen = curses.initscr()
@@ -249,7 +250,7 @@ def draw(canvas):
         star for star in stars_generator(canvas, max_row, max_column)
     ]
 
-    coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column))
+    coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column))
     coroutines.append(fill_orbit_with_garbage(canvas, max_column))
     coroutines.append(update_year())
 
