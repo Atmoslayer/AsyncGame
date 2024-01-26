@@ -65,7 +65,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         column += columns_speed
 
 
-async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column):
+async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column, gun_from_start):
     """Display animation of rocket, read and uses controls. Rocket frames specified on start."""
     global coroutines, obstacles_in_last_collisions, year
     coroutines.append(show_year(canvas, max_column))
@@ -96,7 +96,7 @@ async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column)
 
             draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
-            if space_pressed and year > 2020:
+            if space_pressed and (year > 2020 or gun_from_start):
                 coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
 
             await sleep(1)
@@ -265,7 +265,7 @@ def draw(canvas):
         star for star in stars_generator(canvas, max_row, max_column)
     ]
 
-    coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column))
+    coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column, gun_from_start))
     coroutines.append(fill_orbit_with_garbage(canvas, max_column))
     coroutines.append(update_year())
 
@@ -283,8 +283,19 @@ def draw(canvas):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Space game parser')
-    parser.add_argument('--stars', help='Enter stars quantity', type=int, default=100)
+    parser.add_argument(
+        '--stars',
+        help='Enter stars quantity',
+        type=int,
+        default=100
+    )
+    parser.add_argument(
+        '--fullclip',
+        help='Enter "True", if you want use gun from start of the game',
+        action='store_true'
+    )
     arguments = parser.parse_args()
     stars_quantity = arguments.stars
+    gun_from_start = arguments.fullclip
     curses.update_lines_cols()
     curses.wrapper(draw)
