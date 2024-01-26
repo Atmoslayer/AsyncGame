@@ -11,6 +11,17 @@ from frames_control_functions import read_controls, draw_frame, get_frame_size, 
 from obstacles import Obstacle, show_obstacles
 
 TIC_TIMEOUT = 0.1
+PHRASES = {
+    # Только на английском, Repl.it ломается на кириллице
+    1957: "First Sputnik",
+    1961: "Gagarin flew!",
+    1969: "Armstrong got on the moon!",
+    1971: "First orbital space station Salute-1",
+    1981: "Flight of the Shuttle Columbia",
+    1998: 'ISS start building',
+    2011: 'Messenger launch to Mercury',
+    2020: "Take the plasma gun! Shoot the garbage!",
+}
 
 
 async def sleep(tics=1):
@@ -57,6 +68,10 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column):
     global coroutines
     global obstacles_in_last_collisions
+    global year
+
+    coroutines.append(show_year(canvas, max_column))
+
     game_over = False
     rocket_row_size, rocket_column_size = get_frame_size(rocket_frames[0])
     row_speed = column_speed = 0
@@ -76,7 +91,7 @@ async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_r
 
             draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
-            if space_pressed:
+            if space_pressed and year > 2020:
                 coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
 
             await sleep(1)
@@ -128,12 +143,13 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
         draw_frame(canvas, row, column, garbage_frame, negative=True)
         if obstacle in obstacles_in_last_collisions:
             obstacles_in_last_collisions.remove(obstacle)
+            obstacles.remove(obstacle)
             return
         obstacles.remove(obstacle)
         row += speed
 
 
-async def fill_orbit_with_garbage(canvas, max_column, garbage_quantity):
+async def fill_orbit_with_garbage(canvas, max_column):
     garbage_frames = [
         open(os.path.join(f'{os.getcwd()}/templates/garbage', garbage_file), "r").read() for garbage_file
         in os.listdir(f'{os.getcwd()}/templates/garbage')
@@ -142,9 +158,12 @@ async def fill_orbit_with_garbage(canvas, max_column, garbage_quantity):
     while True:
         garbage_column = random.randint(1, max_column - 10)
         garbage_frame = random.choice(garbage_frames)
-        garbage_timeout = random.randint(1, garbage_quantity)
-        coroutines.append(fly_garbage(canvas, column=garbage_column, garbage_frame=garbage_frame))
-        await sleep(garbage_timeout)
+        garbage_timeout = get_garbage_delay_tics()
+        if garbage_timeout:
+            coroutines.append(fly_garbage(canvas, column=garbage_column, garbage_frame=garbage_frame))
+            await sleep(garbage_timeout)
+        else:
+            await sleep(1)
 
 
 def stars_generator(canvas, max_row, max_column):
@@ -166,9 +185,49 @@ async def show_gameover(canvas, max_row, max_column):
         with open("templates/game_over.txt", "r") as frame:
             frame = frame.read()
             frame_row_size, frame_column_size = get_frame_size(frame)
-
             draw_frame(canvas, max_row / 2 - frame_row_size / 2, max_column / 2 - frame_column_size / 2, frame)
             await asyncio.sleep(0)
+
+
+async def show_year(canvas, max_column):
+    global year
+    year_event = ''
+    event_window = canvas.derwin(1, 1, 1, 1)
+    while True:
+        if PHRASES.get(year):
+            year_event = f'{year} - {PHRASES.get(year)}'
+            event_window.clear()
+        event_window = canvas.derwin(2, len(year_event) + 5, 1, round(max_column / 2 - len(year_event) / 2))
+        event_window.addstr(1, 1, year_event)
+        window = canvas.derwin(3, 10, 1, max_column - 12)
+        window.border()
+        window.addstr(1, 3, str(year))
+        await asyncio.sleep(0)
+
+
+async def update_year():
+    global year
+    while True:
+        year += 1
+        await sleep(15)
+
+
+def get_garbage_delay_tics():
+    global year
+    if year < 1961:
+        return None
+    elif year < 1969:
+        return 20
+    elif year < 1981:
+        return 14
+    elif year < 1995:
+        return 10
+    elif year < 2010:
+        return 8
+    elif year < 2020:
+        return 6
+    else:
+        return 2
 
 
 def draw(canvas):
@@ -188,6 +247,9 @@ def draw(canvas):
 
     global obstacles
     global obstacles_in_last_collisions
+    global year
+
+    year = 1957
 
     obstacles_in_last_collisions = []
     obstacles = []
@@ -199,7 +261,8 @@ def draw(canvas):
     ]
 
     coroutines.append(animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column))
-    coroutines.append(fill_orbit_with_garbage(canvas, max_column, garbage_quantity))
+    coroutines.append(fill_orbit_with_garbage(canvas, max_column))
+    coroutines.append(update_year())
 
     while True:
         for coroutine in coroutines.copy():
@@ -216,7 +279,6 @@ def draw(canvas):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Space game parser')
     parser.add_argument('--stars', help='Enter stars quantity', type=int, default=100)
-    parser.add_argument('--garbage', help='Enter garbage quantity', type=int, default=30)
     arguments = parser.parse_args()
     stars_quantity = arguments.stars
     garbage_quantity = arguments.garbage
