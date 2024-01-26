@@ -8,11 +8,10 @@ import time
 from itertools import cycle
 
 from frames_control_functions import read_controls, draw_frame, get_frame_size, check_frame, update_speed
-from obstacles import Obstacle, show_obstacles
+from obstacles import Obstacle
 
 TIC_TIMEOUT = 0.1
 PHRASES = {
-    # Только на английском, Repl.it ломается на кириллице
     1957: "First Sputnik",
     1961: "Gagarin flew!",
     1969: "Armstrong got on the moon!",
