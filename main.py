@@ -270,6 +270,5 @@ if __name__ == '__main__':
     parser.add_argument('--stars', help='Enter stars quantity', type=int, default=100)
     arguments = parser.parse_args()
     stars_quantity = arguments.stars
-    garbage_quantity = arguments.garbage
     curses.update_lines_cols()
     curses.wrapper(draw)
