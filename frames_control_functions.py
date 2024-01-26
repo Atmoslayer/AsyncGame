@@ -76,7 +76,7 @@ def get_frame_size(text):
 
 def check_frame(current_coordinate, set_direction, max_coordinate, coordinate_size):
     expected_coordinate = current_coordinate + set_direction
-    if 0 >= expected_coordinate or (expected_coordinate + coordinate_size) >= max_coordinate - 1:
+    if 1 >= expected_coordinate or (expected_coordinate + coordinate_size) >= max_coordinate - 1:
         return current_coordinate
     else:
         return current_coordinate + set_direction

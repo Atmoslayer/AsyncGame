@@ -85,11 +85,8 @@ async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column)
             rows_direction, columns_direction, space_pressed = read_controls(canvas)
             row_speed, column_speed = update_speed(row_speed, column_speed, rows_direction, columns_direction)
 
-            rocket_row += row_speed
-            rocket_column += column_speed
-
-            rocket_row = check_frame(rocket_row, rows_direction, max_row, rocket_row_size)
-            rocket_column = check_frame(rocket_column, columns_direction, max_column, rocket_column_size)
+            rocket_row = check_frame(rocket_row, row_speed, max_row, rocket_row_size)
+            rocket_column = check_frame(rocket_column, column_speed, max_column, rocket_column_size)
 
             draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
