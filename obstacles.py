@@ -1,33 +1,8 @@
 import asyncio
 import curses
+import os
+
 from frames_control_functions import draw_frame, get_frame_size
-
-
-EXPLOSION_FRAMES = [
-    """\
-           (_)
-       (  (   (  (
-      () (  (  )
-        ( )  ()
-    """,
-    """\
-           (_)
-       (  (   (
-         (  (  )
-          )  (
-    """,
-    """\
-            (
-          (   (
-         (     (
-          )  (
-    """,
-    """\
-            (
-              (
-            (
-    """,
-]
 
 
 class Obstacle:
@@ -117,12 +92,16 @@ def has_collision(obstacle_corner, obstacle_size, obj_corner, obj_size=(1, 1)):
 
 async def explode(canvas, center_row, center_column):
     """Animate object explosion on transmitted coordinates"""
-    rows, columns = get_frame_size(EXPLOSION_FRAMES[0])
+    explosion_frames = [
+        open(os.path.join(f'{os.getcwd()}/templates/explosion', explosion_file), "r").read() for explosion_file
+        in os.listdir(f'{os.getcwd()}/templates/explosion')
+    ]
+    rows, columns = get_frame_size(explosion_frames[0])
     corner_row = center_row - rows / 2
     corner_column = center_column - columns / 2
 
     curses.beep()
-    for frame in EXPLOSION_FRAMES:
+    for frame in explosion_frames:
 
         draw_frame(canvas, corner_row, corner_column, frame)
 
