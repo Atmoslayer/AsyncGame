@@ -156,8 +156,9 @@ async def fill_orbit_with_garbage(canvas, max_column):
     ]
 
     while True:
-        garbage_column = random.randint(1, max_column - 10)
         garbage_frame = random.choice(garbage_frames)
+        garbage_row_size, garbage_column_size = get_frame_size(garbage_frame)
+        garbage_column = random.randint(1, max_column - garbage_column_size)
         garbage_timeout = get_garbage_delay_tics()
         if garbage_timeout:
             coroutines.append(fly_garbage(canvas, column=garbage_column, garbage_frame=garbage_frame))
