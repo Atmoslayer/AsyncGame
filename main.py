@@ -30,8 +30,7 @@ async def sleep(tics=1):
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
 
-    global obstacles
-    global obstacles_in_last_collisions
+    global obstacles, obstacles_in_last_collisions
 
     row, column = start_row, start_column
 
@@ -65,10 +64,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
 
 async def animate_rocket(canvas, rocket_row, rocket_column, rocket_frames, max_row, max_column):
-    global coroutines
-    global obstacles_in_last_collisions
-    global year
-
+    global coroutines, obstacles_in_last_collisions, year
     coroutines.append(show_year(canvas, max_column))
 
     game_over = False
@@ -123,9 +119,7 @@ async def blink(canvas, row, column, timeout, symbol='*'):
 
 async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
-    global obstacles
-    global coroutines
-    global obstacles_in_last_collisions
+    global obstacles, coroutines, obstacles_in_last_collisions
     rows_number, columns_number = canvas.getmaxyx()
 
     column = max(column, 0)
@@ -244,16 +238,12 @@ def draw(canvas):
     rocket_row = max_row / 2
     rocket_column = max_column / 2
 
-    global obstacles
-    global obstacles_in_last_collisions
-    global year
+    global coroutines, obstacles, obstacles_in_last_collisions, year
 
     year = 1957
 
     obstacles_in_last_collisions = []
     obstacles = []
-
-    global coroutines
 
     coroutines = [
         star for star in stars_generator(canvas, max_row, max_column)
