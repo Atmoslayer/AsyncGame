@@ -8,7 +8,7 @@ import time
 from itertools import cycle
 
 from frames_control_functions import read_controls, draw_frame, get_frame_size, check_frame, update_speed
-from obstacles import Obstacle, explode
+from obstacles import Obstacle
 
 TIC_TIMEOUT = 0.1
 PHRASES = {
@@ -245,9 +245,32 @@ def get_garbage_delay_tics():
         return 2
 
 
+async def explode(canvas, center_row, center_column):
+    """Animate object explosion on transmitted coordinates"""
+    global explosion_frames
+    rows, columns = get_frame_size(explosion_frames[0])
+    corner_row = center_row - rows / 2
+    corner_column = center_column - columns / 2
+
+    curses.beep()
+    for frame in explosion_frames:
+
+        draw_frame(canvas, corner_row, corner_column, frame)
+
+        await asyncio.sleep(0)
+        draw_frame(canvas, corner_row, corner_column, frame, negative=True)
+        await asyncio.sleep(0)
+
+
 def draw(canvas):
     """Specify all start parameters, draws and executes main event loop."""
-    global coroutines, obstacles, obstacles_in_last_collisions, year
+    global coroutines, obstacles, obstacles_in_last_collisions, year, explosion_frames
+
+    explosion_frames = [
+        open(os.path.join(f'{os.getcwd()}/templates/explosion', explosion_file), "r").read() for explosion_file
+        in os.listdir(f'{os.getcwd()}/templates/explosion')
+    ]
+
     canvas.nodelay(True)
     curses.curs_set(False)
     screen = curses.initscr()
