@@ -182,12 +182,12 @@ def stars_generator(canvas, max_row, max_column):
 
 
 async def show_gameover(canvas, max_row, max_column):
+    with open("templates/game_over.txt", "r") as frame:
+        frame = frame.read()
+        frame_row_size, frame_column_size = get_frame_size(frame)
     while True:
-        with open("templates/game_over.txt", "r") as frame:
-            frame = frame.read()
-            frame_row_size, frame_column_size = get_frame_size(frame)
-            draw_frame(canvas, max_row / 2 - frame_row_size / 2, max_column / 2 - frame_column_size / 2, frame)
-            await asyncio.sleep(0)
+        draw_frame(canvas, max_row / 2 - frame_row_size / 2, max_column / 2 - frame_column_size / 2, frame)
+        await asyncio.sleep(0)
 
 
 async def show_year(canvas, max_column):
