@@ -8,7 +8,7 @@ import time
 from itertools import cycle
 
 from frames_control_functions import read_controls, draw_frame, get_frame_size, check_frame, update_speed
-from obstacles import Obstacle
+from obstacles import Obstacle, explode
 
 TIC_TIMEOUT = 0.1
 PHRASES = {
@@ -105,6 +105,9 @@ async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column)
             for obstacle in obstacles:
                 if obstacle.has_collision(rocket_row, rocket_column):
                     obstacles_in_last_collisions.append(obstacle)
+                    await explode(
+                        canvas, rocket_row + round(rocket_row_size / 2), rocket_column + round(rocket_column_size / 2)
+                    )
                     game_over = True
 
 
@@ -128,7 +131,7 @@ async def blink(canvas, row, column, timeout, symbol='*'):
 
 
 async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
-    """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
+    """Animate garbage, flying from top to bottom. Column position will stay same, as specified on start."""
     global obstacles, coroutines, obstacles_in_last_collisions
     rows_number, columns_number = canvas.getmaxyx()
 
@@ -147,6 +150,8 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
         if obstacle in obstacles_in_last_collisions:
             obstacles_in_last_collisions.remove(obstacle)
             obstacles.remove(obstacle)
+
+            await explode(canvas, round(obstacle.row + obstacle.rows_size / 2), round(obstacle.column + obstacle.columns_size / 2))
             return
         obstacles.remove(obstacle)
         row += speed
