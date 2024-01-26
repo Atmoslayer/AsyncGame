@@ -231,6 +231,7 @@ def get_garbage_delay_tics():
 
 
 def draw(canvas):
+    global coroutines, obstacles, obstacles_in_last_collisions, year
     canvas.nodelay(True)
     curses.curs_set(False)
     screen = curses.initscr()
@@ -238,8 +239,6 @@ def draw(canvas):
 
     rocket_row = max_row / 2
     rocket_column = max_column / 2
-
-    global coroutines, obstacles, obstacles_in_last_collisions, year
 
     year = 1957
 
