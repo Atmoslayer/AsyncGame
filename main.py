@@ -77,38 +77,34 @@ async def animate_rocket(canvas, rocket_row, rocket_column, max_row, max_column,
 
     rocket_frames = [rocket_frame_1, rocket_frame_1, rocket_frame_2, rocket_frame_2]
 
-    game_over = False
     rocket_row_size, rocket_column_size = get_frame_size(rocket_frames[0])
     rocket_row = round(rocket_row - rocket_row_size / 2)
     rocket_column = round(rocket_column - rocket_column_size / 2)
 
     row_speed = column_speed = 0
     for rocket_frame in cycle(rocket_frames):
-        if game_over:
-            coroutines.append(show_gameover(canvas, max_row, max_column))
-            return
-        else:
-            rows_direction, columns_direction, space_pressed = read_controls(canvas)
-            row_speed, column_speed = update_speed(row_speed, column_speed, rows_direction, columns_direction)
+        rows_direction, columns_direction, space_pressed = read_controls(canvas)
+        row_speed, column_speed = update_speed(row_speed, column_speed, rows_direction, columns_direction)
 
-            rocket_row = check_frame(rocket_row, row_speed, max_row, rocket_row_size)
-            rocket_column = check_frame(rocket_column, column_speed, max_column, rocket_column_size)
+        rocket_row = check_frame(rocket_row, row_speed, max_row, rocket_row_size)
+        rocket_column = check_frame(rocket_column, column_speed, max_column, rocket_column_size)
 
-            draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
+        draw_frame(canvas, rocket_row, rocket_column, rocket_frame)
 
-            if space_pressed and (year > 2020 or gun_from_start):
-                coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
+        if space_pressed and (year > 2020 or gun_from_start):
+            coroutines.append(fire(canvas, rocket_row, rocket_column + 2))
 
-            await sleep(1)
+        await sleep(1)
 
-            draw_frame(canvas, rocket_row, rocket_column, rocket_frame, negative=True)
-            for obstacle in obstacles:
-                if obstacle.has_collision(rocket_row, rocket_column):
-                    obstacles_in_last_collisions.append(obstacle)
-                    await explode(
-                        canvas, rocket_row + round(rocket_row_size / 2), rocket_column + round(rocket_column_size / 2)
-                    )
-                    game_over = True
+        draw_frame(canvas, rocket_row, rocket_column, rocket_frame, negative=True)
+        for obstacle in obstacles:
+            if obstacle.has_collision(rocket_row, rocket_column):
+                obstacles_in_last_collisions.append(obstacle)
+                await explode(
+                    canvas, rocket_row + round(rocket_row_size / 2), rocket_column + round(rocket_column_size / 2)
+                )
+                coroutines.append(show_gameover(canvas, max_row, max_column))
+                return
 
 
 async def blink(canvas, row, column, timeout, symbol='*'):
