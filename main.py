@@ -299,8 +299,9 @@ def draw(canvas):
             except StopIteration:
                 coroutines.remove(coroutine)
 
-            canvas.refresh()
-            canvas.border()
+
+        canvas.border()
+        canvas.refresh()
         time.sleep(TIC_TIMEOUT)
 
 
